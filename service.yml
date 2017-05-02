@@ -5,7 +5,9 @@ metadata:
 spec:
   selector:
     app: "kubernetes_lets_encrypt_demo_app"
+  type: NodePort
   ports:
   - protocol: "TCP"
     port: 8000
+    nodePort: 32222
     targetPort: 8000

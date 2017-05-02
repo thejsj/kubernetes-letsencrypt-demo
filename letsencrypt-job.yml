@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: letsencrypt
+  labels:
+    app: letsencrypt
+spec:
+  template:
+    metadata:
+      name: letsencrypt
+      labels:
+        app: letsencrypt
+    spec:
+      containers:
+      - image: sjenning/kube-nginx-letsencrypt:0.8.1-1
+        name: letsencrypt
+        imagePullPolicy: Always
+        ports:
+        - name: letsencrypt
+          containerPort: 80
+        env:
+        - name: DOMAINS
+          value: kubernetes-lets-encrypt-demo.jorge.fail
+        - name: EMAIL
+          value: jorge@runnable.com
+        - name: SECRET
+          value: nginx
+        - name: DEPLOYMENT
+          value: nginx
+      restartPolicy: Never

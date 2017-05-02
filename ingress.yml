@@ -3,6 +3,10 @@ kind: Ingress
 metadata:
   name: "kubesrnetes-lets-encrypt-demo-service"
 spec:
+  # tls:
+  # - hosts:
+    # - kubernetes-lets-encrypt-demo.jorge.fail
+    # secretName: nginx
   rules:
   # For local testing
   - host: kubesrnetes-lets-encrypt-demo.local
@@ -20,3 +24,7 @@ spec:
         backend:
           serviceName: "kubernetes-lets-encrypt-demo-app-service"
           servicePort: 8000
+      # - path: /.well-known
+        # backend:
+          # serviceName: letsencrypt
+          # servicePort: 80
