@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kubernetes-lets-encrypt-demo-app
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kubernetes_lets_encrypt_demo_app
+    spec:
+      containers:
+        - name: kubernetes-lets-encrypt-demo-app
+          image: quay.io/hiphipjorge/kubernetes-lest-encrypt-http:latest
+          ports:
+          - containerPort: 8000

@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: "kubesrnetes-lets-encrypt-demo-service"
+spec:
+  rules:
+  # For local testing
+  - host: kubesrnetes-lets-encrypt-demo.local
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: "kubernetes-lets-encrypt-demo-app-service"
+          servicePort: 8000
+  # Real domain exposed to the internet
+  - host: kubernetes-lets-encrypt-demo.jorge.fail
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: "kubernetes-lets-encrypt-demo-app-service"
+          servicePort: 8000
