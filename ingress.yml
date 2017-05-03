@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: "kubesrnetes-lets-encrypt-demo-service"
+  name: demo-ingress
 spec:
   # tls:
   # - hosts:
@@ -14,16 +14,16 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: "kubernetes-lets-encrypt-demo-app-service"
-          servicePort: 8000
+          serviceName: demo-service
+          servicePort: 80
   # Real domain exposed to the internet
   - host: kubernetes-lets-encrypt-demo.jorge.fail
     http:
       paths:
       - path: /
         backend:
-          serviceName: "kubernetes-lets-encrypt-demo-app-service"
-          servicePort: 8000
+          serviceName: demo-service
+          servicePort: 80
       # - path: /.well-known
         # backend:
           # serviceName: letsencrypt
