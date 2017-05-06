@@ -3,6 +3,7 @@ kind: Ingress
 metadata:
   name: "kubernetes-demo-app-ingress-service"
   labels:
+    # Timestamp used in order to force reload of the secret
     last_updated: "1494099933"
 spec:
   tls:
@@ -10,18 +11,13 @@ spec:
     - kubernetes-letsencrypt.jorge.fail
     secretName: letsencrypt-certs
   rules:
-  - host: kubernetes-letsencrypt.local
-    http:
-      paths:
-      - path: /*
-        backend:
-          serviceName: nginx
-          servicePort: 80
-  # Real domain exposed to the internet
   - host: kubernetes-letsencrypt.jorge.fail
     http:
       paths:
+      # The * is needed so that all traffic gets redirected to the nginx box
       - path: /*
         backend:
           serviceName: nginx
           servicePort: 80
+      # We could add a /.well-known/* route here and redirect to the job directory
+      # but our job does not have a health route

@@ -3,6 +3,7 @@ kind: Secret
 metadata:
   name: letsencrypt-certs
 type: Opaque
+# Create an empty secret (with no data) in order for the update to work
 ---
 apiVersion: batch/v1
 kind: Job
@@ -18,6 +19,8 @@ spec:
         app: letsencrypt
     spec:
       containers:
+      # Bash script that starts an http server and launches certbot
+      # Fork of github.com/sjenning/kube-nginx-letsencrypt
       - image: quay.io/hiphipjorge/kube-nginx-letsencrypt:latest
         name: letsencrypt
         imagePullPolicy: Always

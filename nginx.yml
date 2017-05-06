@@ -5,6 +5,8 @@ metadata:
 spec:
   selector:
     app: nginx
+  # This needs to be a NodePort so that our ingress controller in GCP can access the service
+  # Not needed in ingress-controller in minikube
   type: NodePort
   ports:
   - protocol: "TCP"
@@ -32,15 +34,13 @@ spec:
         volumeMounts:
         - name: nginx-configs
           mountPath: /etc/nginx/conf.d
+        # A health check is need for GCP and other ingress controllers to route
+        # traffic to a pod
         livenessProbe:
           httpGet:
             path: /
             port: 80
-            httpHeaders:
-              - name: X-Custom-Header
-                value: Awesome
-          initialDelaySeconds: 3
-          periodSeconds: 3
+      # Load the configuration files for nginx
       volumes:
         - name: nginx-configs
           configMap:
@@ -57,6 +57,7 @@ data:
       '' close;
     }
 
+    # Add upstream for letsencrypt job
     upstream letsencrypt {
       server letsencrypt:80 max_fails=0 fail_timeout=1s;
     }
@@ -71,6 +72,7 @@ data:
         return 200 "Kubernetes + Let's encrypt demo. This should be accessible through https!";
       }
 
+      # Redirect all traffic in /.well-known/ to lets encrypt
       location ^~ /.well-known/acme-challenge/ {
         proxy_pass http://letsencrypt;
         proxy_http_version 1.1;
