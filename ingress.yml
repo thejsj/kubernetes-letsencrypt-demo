@@ -2,6 +2,8 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: "kubernetes-demo-app-ingress-service"
+  labels:
+    last_updated: "1494098991"
 spec:
   tls:
   - hosts:
