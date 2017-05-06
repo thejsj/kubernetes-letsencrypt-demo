@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: "kubernetes-demo-app-ingress-service"
   labels:
-    last_updated: "1494098991"
+    last_updated: "1494099933"
 spec:
   tls:
   - hosts:
