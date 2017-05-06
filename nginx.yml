@@ -1,0 +1,99 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  type: NodePort
+  ports:
+  - protocol: "TCP"
+    nodePort: 32111
+    port: 80
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx
+  name: nginx
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginx-configs
+          mountPath: /etc/nginx/conf.d
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+            httpHeaders:
+              - name: X-Custom-Header
+                value: Awesome
+          initialDelaySeconds: 3
+          periodSeconds: 3
+      volumes:
+        - name: nginx-configs
+          configMap:
+            name: nginx-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+data:
+  test.conf: |
+    server {
+      listen 80 default_server;
+      listen [::]:80 default_server;
+      server_name  _;
+      add_header Content-Type text/plain;
+      return 200 "you are now accessing test";
+    }
+  kubernetes-lets-encrypt-demo.jorge.fail.conf: |
+    map $http_upgrade $connection_upgrade {
+      default upgrade;
+      '' close;
+    }
+
+    upstream letsencrypt-service {
+      server letsencrypt-service:80 max_fails=0 fail_timeout=1s;
+    }
+
+    server {
+      listen 80;
+      listen [::]:80;
+      server_name kubernetes-lets-encrypt-demo.jorge.fail;
+      add_header Content-Type text/plain;
+
+      location / {
+        return 200 "your are now accessing kubernetes-lets-encrypt-demo.jorge.fail Num: 3";
+      }
+
+      location /test {
+        return 200 "TEST: your are now accessing kubernetes-lets-encrypt-demo.jorge.fail TEST";
+      }
+
+      location ^~ /.well-known/acme-challenge/ {
+        proxy_pass http://letsencrypt-service;
+        proxy_http_version 1.1;
+        proxy_set_header upgrade $http_upgrade;
+        proxy_set_header connection $connection_upgrade;
+
+        proxy_set_header Host $http_host;
+        proxy_set_header x-forwarded-host $http_host;
+        proxy_set_header x-real-ip $remote_addr;
+        proxy_set_header x-forwarded-for $proxy_add_x_forwarded_for;
+        proxy_set_header x-forwarded-protocol $scheme;
+        proxy_set_header x-forwarded-proto $scheme;
+      }
+    }

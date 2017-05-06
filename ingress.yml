@@ -1,20 +1,19 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: demo-ingress
+  name: "kubernetes-demo-app-ingress-service"
 spec:
-  # tls:
-  # - hosts:
-    # - kubernetes-lets-encrypt-demo.jorge.fail
-    # secretName: nginx
+  tls:
+  - hosts:
+    - kubernetes-lets-encrypt-demo.jorge.fail
+    secretName: letsencrypt-certs
   rules:
-  # For local testing
-  - host: kubesrnetes-lets-encrypt-demo.local
+  - host: kubernetes-lets-encrypt-demo.local
     http:
       paths:
       - path: /
         backend:
-          serviceName: demo-service
+          serviceName: nginx-service
           servicePort: 80
   # Real domain exposed to the internet
   - host: kubernetes-lets-encrypt-demo.jorge.fail
@@ -22,21 +21,9 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: demo-service
+          serviceName: nginx-service
           servicePort: 80
-      - path: /.well-known/*
+      - path: /*
         backend:
-          serviceName: letsencrypt-service
+          serviceName: nginx-service
           servicePort: 80
-      - path: /test/*
-        backend:
-          serviceName: letsencrypt-service
-          servicePort: 80
-      - path: /wow
-        backend:
-          serviceName: hello-minikube
-          servicePort: 8080
-      - path: /.well-wow
-        backend:
-          serviceName: hello-minikube
-          servicePort: 8080

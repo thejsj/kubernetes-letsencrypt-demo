@@ -1,7 +1,13 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: letsencrypt-certs
+type: Opaque
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: letsencrypt
+  name: letsencrypt-job
   labels:
     app: letsencrypt
 spec:
@@ -12,12 +18,9 @@ spec:
         app: letsencrypt
     spec:
       containers:
-      - image: sjenning/kube-nginx-letsencrypt:0.8.1-1
+      - image: quay.io/hiphipjorge/kube-nginx-letsencrypt:latest
         name: letsencrypt
         imagePullPolicy: Always
-        command:
-        - sleep
-        - "9999"
         ports:
         - name: letsencrypt
           containerPort: 80
@@ -27,7 +30,18 @@ spec:
         - name: EMAIL
           value: jorge@runnable.com
         - name: SECRET
-          value: nginx
+          value: letsencrypt-certs
         - name: DEPLOYMENT
           value: nginx
       restartPolicy: Never
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: letsencrypt-service
+spec:
+  selector:
+    app: letsencrypt
+  ports:
+  - protocol: "TCP"
+    port: 80

@@ -1,0 +1,17 @@
+{
+    "kind": "Deployment",
+    "apiVersion": "extensions/v1beta1",
+    "metadata": {
+        "name": "NAME",
+        "namespace": "NAMESPACE"
+    },
+    "spec": {
+        "template": {
+            "metadata": {
+                "annotations": {
+                    "tlsUpdated": "TLSUPDATED"
+                }
+            }
+        }
+    }
+}
