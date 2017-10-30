@@ -22,7 +22,7 @@ certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-up
 kill $PID
 echo "Certbot finished. Killing http server..."
 
-echo "Finiding certs. Exiting if certs are not found ..."
+echo "Finding certs. Exiting if certs are not found ..."
 CERTPATH=/etc/letsencrypt/live/$(echo $DOMAINS | cut -f1 -d',')
 ls $CERTPATH || exit 1
 
