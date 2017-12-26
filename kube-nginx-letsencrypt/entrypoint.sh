@@ -15,6 +15,7 @@ NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
 echo "Current Kubernetes namespce: $NAMESPACE"
 
 echo "Starting HTTP server..."
+cd $HOME
 python -m SimpleHTTPServer 80 &
 PID=$!
 echo "Starting certbot..."
@@ -24,7 +25,7 @@ echo "Certbot finished. Killing http server..."
 
 echo "Finiding certs. Exiting if certs are not found ..."
 CERTPATH=/etc/letsencrypt/live/$(echo $DOMAINS | cut -f1 -d',')
-ls $CERTPATH || exit 1
+ls $CERTPATH || (sleep 10m; exit 1)
 
 echo "Creating update for secret..."
 cat /secret-patch-template.json | \
