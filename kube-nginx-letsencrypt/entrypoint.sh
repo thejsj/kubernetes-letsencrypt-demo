@@ -15,17 +15,25 @@ NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
 echo "Current Kubernetes namespce: $NAMESPACE"
 
 echo "Starting HTTP server..."
+mkdir $HOME/.well-known
+mkdir $HOME/.well-known/acme-challenge
+echo "This is some text" > $HOME/.well-known/acme-challenge/blank
 cd $HOME
 python -m SimpleHTTPServer 80 &
 PID=$!
+sleep 2m
 echo "Starting certbot..."
 certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS}
-kill $PID
 echo "Certbot finished. Killing http server..."
+
+ls $HOME
+ls $HOME/.well-known
+ls $HOME/.well-known/acme-challenge
 
 echo "Finiding certs. Exiting if certs are not found ..."
 CERTPATH=/etc/letsencrypt/live/$(echo $DOMAINS | cut -f1 -d',')
-ls $CERTPATH || (sleep 10m; exit 1)
+ls $CERTPATH || (sleep 60m; exit 1)
+kill $PID
 
 echo "Creating update for secret..."
 cat /secret-patch-template.json | \
@@ -49,3 +57,4 @@ curl \
   -d @/secret-patch.json https://kubernetes/api/v1/namespaces/${NAMESPACE}/secrets/${SECRET} \
   -k -v
 echo "Done"
+sleep 60m
