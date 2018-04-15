@@ -21,8 +21,8 @@ echo "This is some text" > $HOME/.well-known/acme-challenge/blank
 cd $HOME
 python -m SimpleHTTPServer 80 &
 PID=$!
-echo "sleeping 2m"
-sleep 2m
+echo "sleeping 1m"
+sleep 1m
 echo "Starting certbot..."
 certbot certonly --webroot -w $HOME -n --agree-tos --email ${EMAIL} --no-self-upgrade -d ${DOMAINS}
 echo "Certbot finished. Killing http server..."
@@ -58,5 +58,3 @@ curl \
   -d @/secret-patch.json https://kubernetes/api/v1/namespaces/${NAMESPACE}/secrets/${SECRET} \
   -k -v
 echo "Done"
-echo "sleeping 60m"
-sleep 60m
